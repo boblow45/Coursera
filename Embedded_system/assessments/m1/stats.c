@@ -26,13 +26,13 @@
 void main() {
 
 	unsigned char test[SIZE] = { 34, 201, 190, 154,   8, 194,   2,   6,
-								114, 88,   45,  76, 123,  87,  25,  23,
-								200, 122, 150, 90,   92,  87, 177, 244,
-								201,   6,  12,  60,   8,   2,   5,  67,
-                                7,  87, 250, 230,  99,   3, 100,  90};
+				     114, 88,   45,  76, 123,  87,  25,  23,
+            			     200, 122, 150, 90,   92,  87, 177, 244,
+				     201,   6,  12,  60,   8,   2,   5,  67,
+                		     7,  87, 250, 230,  99,   3, 100,  90};
 
 	print_array(test, SIZE);
-
+	print_statistics(test, SIZE);
 }
 
 /**
@@ -112,34 +112,36 @@ void quick_sort(unsigned char * arr, int low, int high)
 
 void print_statistics(unsigned char * array, unsigned int size)
 {	
-	printf("Array has a max value of %d", find_maximum(array, size));
-	printf("Array has a min value of %d", find_minimum(array, size));
-	printf("Array has a median value of %.4f", find_median(array, size));
-	printf("Array has a mean value of %.4f", find_mean(array, size));
+	printf("\nFollowing values are the basic statistics for the pervided array\n");	
+	printf("\tArray has a max value of %d\n", find_maximum(array, size));
+	printf("\tArray has a min value of %d\n", find_minimum(array, size));
+	printf("\tArray has a median value of %.4f\n", find_median(array, size));
+	printf("\tArray has a mean value of %.4f\n", find_mean(array, size));
 }
 
 void print_array(unsigned char * array, unsigned int size)
 {
+	printf("\nFollowing values are the values stored at each index of the array\n");		
 	for(int i =0; i < size; i++)
-		printf("Element: %d of array is %d \n", i, array[i]);
+		printf("\tarray[%d] is %d \n", i, array[i]);
 }
 
-float find_median(unsigned char * array, unsigned int size){
+float find_median(unsigned char array[], unsigned int size){
 	sort_array(array, size);
 	
 	if(size % 2)
-        return 0.2; // float(array[(size - 1) / 2]);
+        return (float)array[size / 2 -1];
     else
-        return 0.1; // (float(array[size / 2] + array[(size - 1) / 2]) / 2);
+        return (float)array[size / 2] + array[size / 2 - 1] / 2;
 }
 
 float find_mean(unsigned char * array, unsigned int size){
-	float return_val = 0;
-	
+	unsigned long int return_val = 0;
+
 	for(int i=0; i < size; i++)
 		return_val += array[i];
 	
-	return return_val / size;
+	return (float)return_val / size;
 }
 unsigned char find_maximum(unsigned char * array, unsigned int size){
 	unsigned int max_val = 0;
