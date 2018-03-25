@@ -114,23 +114,23 @@ void print_statistics(unsigned char * array, unsigned int size)
 {	
 	printf("Array has a max value of %d", find_maximum(array, size));
 	printf("Array has a min value of %d", find_minimum(array, size));
-	printf("Array has a median value of %d", find_median(array, size));
+	printf("Array has a median value of %.4f", find_median(array, size));
 	printf("Array has a mean value of %.4f", find_mean(array, size));
 }
 
 void print_array(unsigned char * array, unsigned int size)
 {
 	for(int i =0; i < size; i++)
-		printf("Element: %d of array is %d /n", i, array[i]);
+		printf("Element: %d of array is %d \n", i, array[i]);
 }
 
 float find_median(unsigned char * array, unsigned int size){
 	sort_array(array, size);
 	
 	if(size % 2)
-        return float(array[(size - 1) / 2]);
+        return 0.2; // float(array[(size - 1) / 2]);
     else
-        return float(array[size / 2] + array[(size - 1) / 2]) / 2;
+        return 0.1; // (float(array[size / 2] + array[(size - 1) / 2]) / 2);
 }
 
 float find_mean(unsigned char * array, unsigned int size){
@@ -145,7 +145,7 @@ unsigned char find_maximum(unsigned char * array, unsigned int size){
 	unsigned int max_val = 0;
 	
 	for(int i=0; i < size; i++){
-		if array[i] > max_val
+		if(array[i] > max_val)
 			max_val = array[i];
 	}
 	
@@ -156,7 +156,7 @@ unsigned char find_minimum(unsigned char * array, unsigned int size){
 	unsigned int min_val = 255;
 	
 	for(int i=0; i < size; i++){
-		if array[i] < min_val
+		if(array[i] < min_val)
 			min_val = array[i];
 	}
 	
