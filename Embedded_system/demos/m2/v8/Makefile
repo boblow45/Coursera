@@ -27,7 +27,7 @@
 #
 #
 #------------------------------------------------------------------------------
-include sources.mk
+# include sources.mk
 
 # Architecture Specific Flags
 CPU = cortex-m0plus
@@ -44,6 +44,7 @@ TARGET = demo
 LDFLAGS = -Wl,-Map=$(TARGET).map -T $(LINKER_FILE)
 CFLAGS = -mcpu=$(CPU) -m$(ARCH) --specs=$(SPECS) -Wall
 
+SRCS = $(wildcard *.c)
 OBJS = $(SRCS:.c=.o)
 
 %.o : %.c
@@ -60,5 +61,5 @@ $(TARGET).out: $(OBJS)
 
 .PHONY: clean
 clean:
-	rm -f $(OBJS) $(TARGET).out $(TARGET).map
+	rm -f $(OBJS) $(OBJS:.o=.dump) $(TARGET).dump $(TARGET).out $(TARGET).map
 

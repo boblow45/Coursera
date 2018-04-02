@@ -35,7 +35,7 @@ file to assembly
 This will make for the target processor and then dump the compiled executable
 to assembly in the demo.dump file
  $ make all
- $ arm-none-eabi-objdump --disassemble demo > demo.dump
+ $ arm-none-eabi-objdump --disassemble demo.out > demo.dump
 
 =============================================================================
 
@@ -44,10 +44,10 @@ to assembly in the demo.dump file
 =============================================================================
 This will dump the executable output from make (a elf little endian format) 
 into an intel hex record format
- $ arm-none-eabi-objcopy -O ihex demo demo.hex
+ $ arm-none-eabi-objcopy -O ihex demo.out demo.hex
 
 This will dump the executable output from make (a elf little endian format) 
 into a Motorola S-record format
- $ arm-none-eabi-objcopy -O srec demo demo.s19
+ $ arm-none-eabi-objcopy -O srec demo.out demo.s19
 
 
