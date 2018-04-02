@@ -24,19 +24,19 @@
 include sources.mk
 
 # Platform Overrides
-# PLATFORM = 
+PLATFORM = MSP432
 
-# # Architectures Specific Flags
-# LINKER_FILE = ./../msp432p401r.lds
-# CPU = cortex-m0plus
-# ARCH = thumb
-# SPECS = 
+# Architectures Specific Flags
+LINKER_FILE = ./../msp432p401r.lds
+CPU = cortex-m0plus
+ARCH = thumb
+SPECS = nosys.specs
 
-# # Compiler Flags and Defines
-# CC = arm-none-eabi-gcc
-# LD = arm-none-eabi-ld
-# LDFLAGS = 
-# CFLAGS = -Wall -pedantic -ansi
+# Compiler Flags and Defines
+CC = arm-none-eabi-gcc
+LD = arm-none-eabi-ld
+LDFLAGS = -Wl,-Map=$(TARGET).map -T $(LINKER_FILE)
+CFLAGS = -Wall -pedantic -ansi
 
 OBJS = $(SRCS:.c=.o)
 
@@ -46,10 +46,16 @@ OBJS = $(SRCS:.c=.o)
 .PHONY: build
 build: all
 
-all:
-	@echo $(SRCS)
-	@echo $(OBJS)
-	@echo $(INCS)
+.PHONY: all
+all: $(TARGET).out
+
+$(TARGET).out: $(OBJS)
+	$(CC) $(OBJS) $(CFLAGS) $(LDFLAGS) -o $@
+
+# all:
+# 	@echo $(SRCS)
+# 	@echo $(OBJS)
+# 	@echo $(INCS)
 
 
 .PHONY: clean
