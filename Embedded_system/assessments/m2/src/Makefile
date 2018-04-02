@@ -24,18 +24,35 @@
 include sources.mk
 
 # Platform Overrides
-PLATFORM = 
+# PLATFORM = 
 
-# Architectures Specific Flags
-LINKER_FILE = 
-CPU = 
-ARCH = 
-SPECS = 
+# # Architectures Specific Flags
+# LINKER_FILE = ./../msp432p401r.lds
+# CPU = cortex-m0plus
+# ARCH = thumb
+# SPECS = 
 
-# Compiler Flags and Defines
-CC = 
-LD = 
-LDFLAGS = 
-CFLAGS = 
-CPPFLAGs = 
+# # Compiler Flags and Defines
+# CC = arm-none-eabi-gcc
+# LD = arm-none-eabi-ld
+# LDFLAGS = 
+# CFLAGS = -Wall -pedantic -ansi
 
+OBJS = $(SRCS:.c=.o)
+
+%.o : %.c
+	$(CC) -c $< $(CFLAGS) -o $@
+
+.PHONY: build
+build: all
+
+all:
+	@echo $(SRCS)
+	@echo $(OBJS)
+	@echo $(INCS)
+
+
+.PHONY: clean
+
+clean:
+	rm -f $(OBJS) $(TARGET).out $(TARGET).map
