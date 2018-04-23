@@ -21,5 +21,5 @@ SRCS = main.c \
 
 
 # Add your include paths to this variable
-INCS = $(wildcard ./../include/*/*.h)
+INCS = -I ./../include/CMSIS -I ./../include/common -I ./../include/msp432
 

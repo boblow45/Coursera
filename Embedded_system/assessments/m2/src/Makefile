@@ -1,47 +1,55 @@
-#******************************************************************************
-# Copyright (C) 2017 by Alex Fosdick - University of Colorado
-#
-# Redistribution, modification or use of this software in source or binary
-# forms is permitted as long as the files maintain this copyright. Users are 
-# permitted to modify this and use it to learn about the field of embedded
-# software. Alex Fosdick and the University of Colorado are not liable for any
-# misuse of this material. 
-#
-#*****************************************************************************
-
 #------------------------------------------------------------------------------
-# <Put a Description Here>
+# Simple makefile for the cortex-M0+ build system
 #
-# Use: make [TARGET] [PLATFORM-OVERRIDES]
+# Use: make [TARGET] [OVERRIDES]
 #
 # Build Targets:
-#      <Put a description of the supported targets here>
+#      <FILE>.o - Builds <FILE>.o object file
+#      build - Builds and links all source files
+#      all - Same as build
+#      clean - removes all generated files
 #
-# Platform Overrides:
-#      <Put a description of the supported Overrides here
+# Overrides:
+#      PLATFORM - Defines the platform to build the code for
+#      CPU - ARM Cortex Architecture (cortex-m0plus, cortex-m4)
+#      ARCH - ARM Architecture (arm, thumb)
+#
 #
 #------------------------------------------------------------------------------
+
 include sources.mk
+OBJS = $(SRCS:.c=.o)
 
 # Platform Overrides
 PLATFORM = MSP432
 
-# Architectures Specific Flags
-LINKER_FILE = ./../msp432p401r.lds
-CPU = cortex-m0plus
-ARCH = thumb
-SPECS = nosys.specs
+# Check if the user wants to compile the code for the host machine or for the 
+# embedded system. This if statement will change to the correct compliler for
+# the given platform
+ifeq ($(PLATFORM), HOST)
+	CC = gcc
 
-# Compiler Flags and Defines
-CC = arm-none-eabi-gcc
-LD = arm-none-eabi-ld
+else
+	# Compiler to use for the ARM based device
+	CC = arm-none-eabi-gcc
+	LD = arm-none-eabi-ld
+	
+	# Architectures Specific Flags
+	CPU = cortex-m4
+	ARCH = thumb
+	SPECS = nosys.specs
+	
+	CFLAGS = -mcpu=$(CPU) -m$(ARCH) -march=armv7e-m -mfloat-abi=hard -mfpu=fpv4-sp-d16 --specs=$(SPECS) 
+	LINKER_FILE = -T ./../msp432p401r.lds
+
+endif
+
+CFLAGS += -Wall -Werror -g -O0 -std=c99
 LDFLAGS = -Wl,-Map=$(TARGET).map -T $(LINKER_FILE)
-CFLAGS = -Wall -pedantic -ansi
 
-OBJS = $(SRCS:.c=.o)
 
 %.o : %.c
-	$(CC) -c $< $(CFLAGS) -o $@
+	$(CC) -c $< $(INCS) $(CFLAGS) -o $@
 
 .PHONY: build
 build: all
@@ -52,10 +60,15 @@ all: $(TARGET).out
 $(TARGET).out: $(OBJS)
 	$(CC) $(OBJS) $(CFLAGS) $(LDFLAGS) -o $@
 
-# all:
-# 	@echo $(SRCS)
-# 	@echo $(OBJS)
-# 	@echo $(INCS)
+.PHONY: help
+
+help:
+	-@echo $(LDFLAGS)
+	-@echo $(CFLAGS)
+	-@echo $(OBJS)
+#-@echo $(SRCS)
+#-@echo $(OBJS)
+#-@echo $(INCS)
 
 
 .PHONY: clean
