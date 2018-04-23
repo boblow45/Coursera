@@ -21,5 +21,4 @@ SRCS = main.c \
 
 
 # Add your include paths to this variable
-INCS = -I ./../include/CMSIS -I ./../include/common -I ./../include/msp432
-
+INCS = -I ../include/CMSIS -I ../include/common -I ../include/msp432

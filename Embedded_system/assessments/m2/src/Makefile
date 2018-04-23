@@ -17,11 +17,26 @@
 #
 #------------------------------------------------------------------------------
 
-include sources.mk
+# include sources.mk
+SRCS = main.c \
+	memory.c \
+	interrupts_msp432p401r_gcc.c \
+	startup_msp432p401r_gcc.c \
+	system_msp432p401r.c
+
+# Sources can also be done with one of the following
+# SRCS = $(wildcard *.c)
+
+
+# Add your include paths to this variable
+INCS = -I ../include/CMSIS -I ../include/common -I ../include/msp432
+
 OBJS = $(SRCS:.c=.o)
 
 # Platform Overrides
 PLATFORM = MSP432
+
+CUSTOMDEFINES = -D$(PLATFORM)
 
 # Check if the user wants to compile the code for the host machine or for the 
 # embedded system. This if statement will change to the correct compliler for
@@ -40,16 +55,16 @@ else
 	SPECS = nosys.specs
 	
 	CFLAGS = -mcpu=$(CPU) -m$(ARCH) -march=armv7e-m -mfloat-abi=hard -mfpu=fpv4-sp-d16 --specs=$(SPECS) 
-	LINKER_FILE = -T ./../msp432p401r.lds
+	LINKER_FILE = -T ../msp432p401r.lds
 
 endif
 
-CFLAGS += -Wall -Werror -g -O0 -std=c99
-LDFLAGS = -Wl,-Map=$(TARGET).map -T $(LINKER_FILE)
+CFLAGS += -Wall -Werror -g -O0 -std=c99 $(CUSTOMDEFINES)
+LDFLAGS = -Wl,-Map=$(TARGET).map $(LINKER_FILE)
 
 
 %.o : %.c
-	$(CC) -c $< $(INCS) $(CFLAGS) -o $@
+	$(CC) -c $^ $(INCS) $(CFLAGS) -o $@
 
 .PHONY: build
 build: all
