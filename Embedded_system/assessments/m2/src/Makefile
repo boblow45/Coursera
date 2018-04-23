@@ -26,7 +26,7 @@ SRCS = main.c \
 
 # Sources can also be done with one of the following
 # SRCS = $(wildcard *.c)
-
+TARGET = demo
 
 # Add your include paths to this variable
 INCS = -I ../include/CMSIS -I ../include/common -I ../include/msp432
