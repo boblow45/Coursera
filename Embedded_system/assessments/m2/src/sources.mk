@@ -10,11 +10,7 @@
 #*****************************************************************************
 
 # Add your Source files to this variable
-SRCS = main.c \
-	memory.c \
-	interrupts_msp432p401r_gcc.c \
-	startup_msp432p401r_gcc.c \
-	system_msp432p401r.c
+SRCS = main.c memory.c  
 
 # Add your include Drectorys here. 
 INCDIRS :=  ./../include/CMSIS ./../include/common ./../include/msp432

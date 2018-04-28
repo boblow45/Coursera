@@ -28,11 +28,9 @@ include sources.mk
 
 TARGET = c1m2
 
-# Define all object files.
-OBJS = $(SRCS:.c=.o)
-
 # Platform Overrides
 PLATFORM = MSP432
+# PLATFORM = HOST
 
 CUSTOMDEFINES = -D$(PLATFORM)
 
@@ -46,19 +44,23 @@ else
 	# Compiler to use for the ARM based device
 	CC = arm-none-eabi-gcc
 	
+	SRCS += interrupts_msp432p401r_gcc.c system_msp432p401r.c startup_msp432p401r_gcc.c
 	# Architectures Specific Flags
 	CPU = cortex-m4
 	ARCH = thumb
 	SPECS = nosys.specs
 	
 	CFLAGS = -mcpu=$(CPU) -m$(ARCH) -march=armv7e-m -mfloat-abi=hard -mfpu=fpv4-sp-d16 --specs=$(SPECS) 
-	LINKER_FILE = -T../msp432p401r.lds
+	LINKER_FILE = -T ../msp432p401r.lds
 
 endif
 
 CFLAGS += -Wall -Werror -g -O0 -std=c99 $(CUSTOMDEFINES)
 CFLAGS += $(INCS) 
 LDFLAGS = -Wl,-Map=$(TARGET).map $(LINKER_FILE)
+
+# Define all object files.
+OBJS = $(SRCS:.c=.o)
 
 
 # Compile: create object files from C source files.
@@ -73,20 +75,23 @@ LDFLAGS = -Wl,-Map=$(TARGET).map $(LINKER_FILE)
 %.asm : %.c
 	$(CC) -S $(CFLAGS) $< -o $@
 
+# Build and link the project
 .PHONY: build
 build: all
 
+# Build and link the project
 .PHONY: all
 all: $(TARGET).out
 
 $(TARGET).out: $(OBJS)
 	$(CC) $(OBJS) $(CFLAGS) $(LDFLAGS) -o $@
 
+# Create all the object files for this make file
 .PHONY: compile-all 
 
 compile-all: $(OBJS)
 
-# 
+# print out details of what this makefile can do 
 .PHONY: help
 
 help:
@@ -94,7 +99,7 @@ help:
 	-@echo $(DEPS)
 
 
-# Following rule will remove all complield files.
+# Following rule will remove all files created by this makefile.
 .PHONY: clean
 
 clean:
