@@ -16,9 +16,11 @@ SRCS = main.c \
 	startup_msp432p401r_gcc.c \
 	system_msp432p401r.c
 
-# Sources can also be done with one of the following
-# SRCS = $(wildcard *.c)
+# Add your include Drectorys here. 
+INCDIRS =  ./../include/CMSIS ./../include/common ./../include/msp432
 
+# Add -I infront of each include directory so they can be pass to GCC
+INCS = $(INCDIRS:%=-I%)
 
-# Add your include paths to this variable
-INCS = -I ../include/CMSIS -I ../include/common -I ../include/msp432
+# Find all .h files in the directories defined above
+DEPS = $(foreach I, $(INCDIRS), $(shell find $(I) -name '*.h'))

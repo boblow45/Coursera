@@ -17,20 +17,10 @@
 #
 #------------------------------------------------------------------------------
 
-# include sources.mk
-SRCS = main.c \
-	memory.c \
-	interrupts_msp432p401r_gcc.c \
-	startup_msp432p401r_gcc.c \
-	system_msp432p401r.c
 
-# Sources can also be done with one of the following
-# SRCS = $(wildcard *.c)
-TARGET = demo
+include sources.mk
 
-# Add your include paths to this variable
-INCS = -I ../include/CMSIS -I ../include/common -I ../include/msp432
-
+TARGET = c1m2
 OBJS = $(SRCS:.c=.o)
 
 # Platform Overrides
@@ -55,16 +45,18 @@ else
 	SPECS = nosys.specs
 	
 	CFLAGS = -mcpu=$(CPU) -m$(ARCH) -march=armv7e-m -mfloat-abi=hard -mfpu=fpv4-sp-d16 --specs=$(SPECS) 
-	LINKER_FILE = -T ../msp432p401r.lds
+	LINKER_FILE = -T../msp432p401r.lds
 
 endif
 
 CFLAGS += -Wall -Werror -g -O0 -std=c99 $(CUSTOMDEFINES)
+CFLAGS += $(INCS) 
 LDFLAGS = -Wl,-Map=$(TARGET).map $(LINKER_FILE)
 
 
-%.o : %.c
-	$(CC) -c $^ $(INCS) $(CFLAGS) -o $@
+
+%.o : %.c $(DEPS)
+	$(CC) -c -o $@ $< $(CFLAGS)  
 
 .PHONY: build
 build: all
@@ -79,8 +71,7 @@ $(TARGET).out: $(OBJS)
 
 help:
 	-@echo $(LDFLAGS)
-	-@echo $(CFLAGS)
-	-@echo $(OBJS)
+	-@echo $(DEPS)
 #-@echo $(SRCS)
 #-@echo $(OBJS)
 #-@echo $(INCS)
