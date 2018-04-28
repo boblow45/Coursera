@@ -74,22 +74,27 @@ LDFLAGS = -Wl,-Map=$(TARGET).map $(LINKER_FILE)
 	$(CC) -S $(CFLAGS) $< -o $@
 
 .PHONY: build
+build: all
 
-build: $(TARGET).out
+.PHONY: all
+all: $(TARGET).out
 
 $(TARGET).out: $(OBJS)
 	$(CC) $(OBJS) $(CFLAGS) $(LDFLAGS) -o $@
 
+.PHONY: compile-all 
+
+compile-all: $(OBJS)
+
+# 
 .PHONY: help
 
 help:
 	-@echo $(LDFLAGS)
 	-@echo $(DEPS)
-#-@echo $(SRCS)
-#-@echo $(OBJS)
-#-@echo $(INCS)
 
 
+# Following rule will remove all complield files.
 .PHONY: clean
 
 clean:
