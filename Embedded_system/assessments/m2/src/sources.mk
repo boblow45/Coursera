@@ -17,10 +17,10 @@ SRCS = main.c \
 	system_msp432p401r.c
 
 # Add your include Drectorys here. 
-INCDIRS =  ./../include/CMSIS ./../include/common ./../include/msp432
+INCDIRS :=  ./../include/CMSIS ./../include/common ./../include/msp432
 
 # Add -I infront of each include directory so they can be pass to GCC
-INCS = $(INCDIRS:%=-I%)
+INCS := $(INCDIRS:%=-I%)
 
 # Find all .h files in the directories defined above
-DEPS = $(foreach I, $(INCDIRS), $(shell find $(I) -name '*.h'))
+DEPS := $(foreach I, $(INCDIRS), $(shell find $(I) -name '*.h'))

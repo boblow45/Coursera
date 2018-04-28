@@ -1,26 +1,34 @@
-#------------------------------------------------------------------------------
+#----------------------------------------------------------------------------
 # Simple makefile for the cortex-M0+ build system
 #
 # Use: make [TARGET] [OVERRIDES]
 #
 # Build Targets:
-#      <FILE>.o - Builds <FILE>.o object file
-#      build - Builds and links all source files
-#      all - Same as build
-#      clean - removes all generated files
+#      	<FILE>.o - Builds <FILE>.o object file
+#      	<FILE>.i - Create a preprocessed source file for use in submitting
+#                 bug reports to the GCC project.
+#      	<FILE>.asm - Just compile <FILE>.c into the assembler code only.
+#      	build - Builds and links all source files
+#      	clean - removes all generated files
+# 		help- gives the user details about what this makefile does
 #
 # Overrides:
-#      PLATFORM - Defines the platform to build the code for
-#      CPU - ARM Cortex Architecture (cortex-m0plus, cortex-m4)
-#      ARCH - ARM Architecture (arm, thumb)
+#      	PLATFORM - Defines the platform to build the code for
+#      	CPU - ARM Cortex Architecture (cortex-m0plus, cortex-m4)
+#      	ARCH - ARM Architecture (arm, thumb)
 #
-#
-#------------------------------------------------------------------------------
-
+# To rebuild project do "make clean" then "make build".
+#----------------------------------------------------------------------------
+# 
+# see https://www.avrfreaks.net/forum/makefile-winavr-asm-code for example of 
+# example of an extensive make file
+#----------------------------------------------------------------------------
 
 include sources.mk
 
 TARGET = c1m2
+
+# Define all object files.
 OBJS = $(SRCS:.c=.o)
 
 # Platform Overrides
@@ -37,7 +45,6 @@ ifeq ($(PLATFORM), HOST)
 else
 	# Compiler to use for the ARM based device
 	CC = arm-none-eabi-gcc
-	LD = arm-none-eabi-ld
 	
 	# Architectures Specific Flags
 	CPU = cortex-m4
@@ -54,15 +61,21 @@ CFLAGS += $(INCS)
 LDFLAGS = -Wl,-Map=$(TARGET).map $(LINKER_FILE)
 
 
-
+# Compile: create object files from C source files.
 %.o : %.c $(DEPS)
-	$(CC) -c -o $@ $< $(CFLAGS)  
+	$(CC) -c $< -o $@ $(CFLAGS)  
+
+# Create preprocessed source for use in sending a bug report.
+%.i : %.c
+	$(CC) -E $< -o $@ $(CFLAGS) 
+
+# Compile: create assembler files from C source files.
+%.asm : %.c
+	$(CC) -S $(CFLAGS) $< -o $@
 
 .PHONY: build
-build: all
 
-.PHONY: all
-all: $(TARGET).out
+build: $(TARGET).out
 
 $(TARGET).out: $(OBJS)
 	$(CC) $(OBJS) $(CFLAGS) $(LDFLAGS) -o $@
@@ -80,4 +93,4 @@ help:
 .PHONY: clean
 
 clean:
-	rm -f $(OBJS) $(TARGET).out $(TARGET).map
+	rm -f $(OBJS) $(SRCS:.c=.i) $(SRCS:.c=.asm) $(TARGET).out $(TARGET).map
