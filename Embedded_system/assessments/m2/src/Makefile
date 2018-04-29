@@ -25,14 +25,11 @@
 #----------------------------------------------------------------------------
 
 include sources.mk
-
 TARGET = c1m2
-
-# Platform Overrides
+OBJDUMP_FILE = output.dump
 PLATFORM = MSP432
-# PLATFORM = HOST
 
-CUSTOMDEFINES = -D$(PLATFORM)
+DEFINES = -D$(PLATFORM)
 
 # Check if the user wants to compile the code for the host machine or for the 
 # embedded system. This if statement will change to the correct compliler for
@@ -44,24 +41,26 @@ else
 	# Compiler to use for the ARM based device
 	CC = arm-none-eabi-gcc
 	
+	# Add the files which can only be compiled using arm core
 	SRCS += interrupts_msp432p401r_gcc.c system_msp432p401r.c startup_msp432p401r_gcc.c
 	# Architectures Specific Flags
 	CPU = cortex-m4
 	ARCH = thumb
 	SPECS = nosys.specs
 	
-	CFLAGS = -mcpu=$(CPU) -m$(ARCH) -march=armv7e-m -mfloat-abi=hard -mfpu=fpv4-sp-d16 --specs=$(SPECS) 
+	ARCH_FLAGS = -m$(ARCH) -march=armv7e-m
+	CFLAGS = -mcpu=$(CPU) $(ARCH_FLAGS) -mfloat-abi=hard -mfpu=fpv4-sp-d16 
 	LINKER_FILE = -T ../msp432p401r.lds
-
+	
+	# Linker Settings
+	LFLAGS = -Wl,-Map=$(TARGET).map $(LINKER_FILE) --specs=$(SPECS) 
 endif
 
-CFLAGS += -Wall -Werror -g -O0 -std=c99 $(CUSTOMDEFINES)
-CFLAGS += $(INCS) 
-LDFLAGS = -Wl,-Map=$(TARGET).map $(LINKER_FILE)
+CFLAGS += $(INCS) $(DEFINES)
 
+# --------------------------------------- Source Files ----------------------------------
 # Define all object files.
 OBJS = $(SRCS:.c=.o)
-
 
 # Compile: create object files from C source files.
 %.o : %.c $(DEPS)
@@ -75,16 +74,25 @@ OBJS = $(SRCS:.c=.o)
 %.asm : %.c
 	$(CC) -S $(CFLAGS) $< -o $@
 
+$(TARGET).elf: $(OBJS)
+	$(CC) $(OBJS) $(CFLAGS) $(LFLAGS) -o $@
+
+$(TARGET).bin: $(TARGET).elf
+	arm-none-eabi-objcopy -O binary $< $@
+
+$(OBJDUMP_FILE): $(TARGET).bin
+	arm-none-eabi-objdump -D $(TARGET).elf > $(OBJDUMP_FILE)
+
 # Build and link the project
 .PHONY: build
 build: all
 
 # Build and link the project
 .PHONY: all
-all: $(TARGET).out
+all: $(TARGET).elf
 
 $(TARGET).out: $(OBJS)
-	$(CC) $(OBJS) $(CFLAGS) $(LDFLAGS) -o $@
+	$(CC) $(OBJS) $(CFLAGS) $(LFLAGS) -o $@
 
 # Create all the object files for this make file
 .PHONY: compile-all 
@@ -95,7 +103,7 @@ compile-all: $(OBJS)
 .PHONY: help
 
 help:
-	-@echo $(LDFLAGS)
+	-@echo $(LFLAGS)
 	-@echo $(DEPS)
 
 
@@ -103,4 +111,4 @@ help:
 .PHONY: clean
 
 clean:
-	rm -f $(OBJS) $(SRCS:.c=.i) $(SRCS:.c=.asm) $(TARGET).out $(TARGET).map
+	rm -f $(OBJS) $(SRCS:.c=.i) $(SRCS:.c=.asm) $(TARGET).elf $(TARGET).bin $(OBJDUMP_FILE) $(TARGET).map
