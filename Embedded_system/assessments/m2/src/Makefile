@@ -91,9 +91,6 @@ build: all
 .PHONY: all
 all: $(TARGET).elf
 
-$(TARGET).out: $(OBJS)
-	$(CC) $(OBJS) $(CFLAGS) $(LFLAGS) -o $@
-
 # Create all the object files for this make file
 .PHONY: compile-all 
 
