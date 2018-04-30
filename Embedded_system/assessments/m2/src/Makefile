@@ -70,6 +70,10 @@ OBJS = $(SRCS:.c=.o)
 %.i : %.c
 	$(CC) -E $< -o $@ $(CFLAGS) 
 
+# Following can be used to get the size of the ouyput files
+$(TARGET).size: $(TARGET).o
+	arm-none-eabi-readelf -e $(TARGET).o
+
 # Compile: create assembler files from C source files.
 %.asm : %.c
 	$(CC) -S $(CFLAGS) $< -o $@
@@ -83,10 +87,17 @@ $(TARGET).bin: $(TARGET).elf
 $(OBJDUMP_FILE): $(TARGET).bin
 	arm-none-eabi-objdump -D $(TARGET).elf > $(OBJDUMP_FILE)
 
+PHONY: dump
+dump: $(OBJDUMP_FILE)
+
+PHONY: size
+
+size: $(TARGET).elf
+	arm-none-eabi-size --format=berkeley --common -t $(TARGET).elf >> $(TARGET).size
+
 # Build and link the project
 .PHONY: build
 build: all
-
 # Build and link the project
 .PHONY: all
 all: $(TARGET).elf
